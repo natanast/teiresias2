@@ -19,7 +19,7 @@ def max_similarity(max_len: int, weight: float, multiplier: float, threshold: in
     return _sum
 
 
-def similarity(seq1: str, seq2: str, weight: float, multiplier: float, threshold: int = 105):
+def similarity(seq1: str, seq2: str, weight: float, multiplier: float, penalty: float, threshold: int):
     aa_clusters = [
         {"I", "L", "V", "A"},
         {"H", "K", "R"},
@@ -41,7 +41,6 @@ def similarity(seq1: str, seq2: str, weight: float, multiplier: float, threshold
         else:
             _current_multiplier = multiplier
             reward = weight
-
             # reward = 1
             
         if aa1 == aa2:   
@@ -62,7 +61,7 @@ def similarity(seq1: str, seq2: str, weight: float, multiplier: float, threshold
                     _similarity += (class_multiplier + reward) * _current_multiplier
             else:
                 max_concurrencies = 0
-                # _similarity -= 1
+                _similarity -= penalty
 
     _max_similarity = max_similarity(len(seq1), weight, multiplier, threshold)
     # print("Similarity is: ", _similarity)
@@ -72,8 +71,8 @@ def similarity(seq1: str, seq2: str, weight: float, multiplier: float, threshold
     return max(min(_similarity,1),0) #np.clip(_similarity, 0, 1)
 
 
-def distance(seq1: str, seq2: str, weight, multiplier, threshold ):
-    return 1 - similarity(seq1, seq2, weight, multiplier, threshold)
+def distance(seq1: str, seq2: str, weight, multiplier, penalty, threshold):
+    return 1 - similarity(seq1, seq2, weight, multiplier, penalty, threshold)
 
 
 def construct_neighbor_matrix(lst):
@@ -88,11 +87,11 @@ def construct_neighbor_matrix(lst):
 
 
 @timeit
-def distance_matrix(aa_seqs: dict, max_len: int, multiplier):
+def distance_matrix(aa_seqs: dict, weight, multiplier, penalty, threshold):
     total_sequences = len(aa_seqs)
     _distance_matrix = np.zeros((total_sequences, total_sequences))
     #n = int(total_sequences^2 - total_sequences) / 2
-    similarity_matrix = []
+    #similarity_matrix = []
 
     sequences = list(aa_seqs.values())
     snames = list(aa_seqs.keys())
@@ -103,7 +102,7 @@ def distance_matrix(aa_seqs: dict, max_len: int, multiplier):
         rest_sequences = sequences[idx1 + 1 :]
         rest_snames = snames[idx1 + 1 :]
         for idx2, (name2, seq2) in enumerate(zip(rest_snames, rest_sequences)):
-            distance_score = distance(seq1, seq2, 0.1, multiplier, 105)
+            distance_score = distance(seq1, seq2, weight, multiplier, penalty, threshold)
             #similarity_matrix.append(similarity_score)
             _distance_matrix[idx1][idx2 + idx1 + 1] = distance_score
             _distance_matrix[idx1 + idx2 + 1][idx1] = distance_score

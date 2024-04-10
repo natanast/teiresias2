@@ -26,11 +26,7 @@ def get_tree(dist_matrix: np.ndarray, save: bool = True):
     end = time()
     print(f"get_tree took {end - start} seconds")
 
-<<<<<<< HEAD
     return tree, file_path
-=======
-    return tree
->>>>>>> origin/main
 
 
 def save_tree_structure(tree, file_path):
