@@ -213,7 +213,7 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
         heights_dict = {"h1": h1,"h2": h2,"h3": h3, "h4": h4, "h5": h5,"h6": h6,"h7": h7, "h8": h8}
 
         print("Tree will be cut on the following heights: ", height_values)
-#changed
+
         for height_value in height_values:
             if height_value == h1:
                 cutted_tree = Tree.cluster_cut(tree, h1)
