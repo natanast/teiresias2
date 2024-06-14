@@ -215,21 +215,21 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
         print("Tree will be cut on the following heights: ", height_values)
 
         for height_value in height_values:
-            if height == h1:
+            if height_value == h1:
                 cutted_tree = Tree.cluster_cut(tree, h1)
-            elif height == h2:
+            elif height_value == h2:
                 cutted_tree = Tree.cluster_cut(tree, h2)
-            elif height == h3:
+            elif height_value == h3:
                 cutted_tree = Tree.cluster_cut(tree, h3)
-            elif height == h4:
+            elif height_value == h4:
                 cutted_tree = Tree.cluster_cut(tree, h4)
-            elif height == h5:
+            elif height_value == h5:
                 cutted_tree = Tree.cluster_cut(tree, h5)
-            elif height == h6:
+            elif height_value == h6:
                 cutted_tree = Tree.cluster_cut(tree, h6)
-            elif height == h7:
+            elif height_value == h7:
                 cutted_tree = Tree.cluster_cut(tree, h7)
-            elif height == h8:
+            elif height_value == h8:
                 cutted_tree = Tree.cluster_cut(tree, h8)
 
             clusters = cutted_tree[0]
@@ -269,29 +269,29 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
         heights = {"h1": h1,"h2": h2,"h3": h3, "h4": h4, "h5": h5,"h6": h6,"h7": h7, "h8": h8, "h9": h9,"h10": h10,"h11": h11, "h12": h12}
 
         for height_value in height_values:
-            if height == h1:
+            if height_value == h1:
                 cutted_tree = Tree.cluster_cut(tree, h1)
-            elif height == h2:
+            elif height_value == h2:
                 cutted_tree = Tree.cluster_cut(tree, h2)
-            elif height == h3:
+            elif height_value == h3:
                 cutted_tree = Tree.cluster_cut(tree, h3)
-            elif height == h4:
+            elif height_value == h4:
                 cutted_tree = Tree.cluster_cut(tree, h4)
-            elif height == h5:
+            elif height_value == h5:
                 cutted_tree = Tree.cluster_cut(tree, h5)
-            elif height == h6:
+            elif height_value == h6:
                 cutted_tree = Tree.cluster_cut(tree, h6)
-            elif height == h7:
+            elif height_value == h7:
                 cutted_tree = Tree.cluster_cut(tree, h7)
-            elif height == h8:
+            elif height_value == h8:
                 cutted_tree = Tree.cluster_cut(tree, h8)
-            elif height == h9:
+            elif height_value == h9:
                  cutted_tree = Tree.cluster_cut(tree, h9)
-            elif height == h10:
+            elif height_value == h10:
                 cutted_tree = Tree.cluster_cut(tree, h10)
-            elif height == h11:
+            elif height_value == h11:
                 cutted_tree = Tree.cluster_cut(tree, h11)
-            elif height == h12:
+            elif height_value == h12:
                 cutted_tree = Tree.cluster_cut(tree, h12)
             
             clusters = cutted_tree[0]
