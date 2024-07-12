@@ -19,7 +19,7 @@ def max_similarity(max_len: int, weight: float, multiplier: float, threshold: in
     return _sum
 
 
-def similarity(seq1: str, seq2: str, weight: float, multiplier: float, penalty: float, threshold: int):
+def similarity(seq1: str, seq2: str, weight: float, multiplier: float, penalty: float, threshold: int, gap_threshold: int = 15 ):
     aa_clusters = [
         {"I", "L", "V", "A"},
         {"H", "K", "R"},
@@ -35,6 +35,13 @@ def similarity(seq1: str, seq2: str, weight: float, multiplier: float, penalty: 
         max_concurrencies += 1
         class_multiplier = 1
         
+        if pos < gap_threshold:
+            if aa1 == ".":
+                aa1 = aa2
+            
+            if aa2 == ".":
+                aa2 = aa1
+    
         if pos < threshold:
             _current_multiplier = 1
             reward = weight
@@ -71,8 +78,8 @@ def similarity(seq1: str, seq2: str, weight: float, multiplier: float, penalty: 
     return max(min(_similarity,1),0) #np.clip(_similarity, 0, 1)
 
 
-def distance(seq1: str, seq2: str, weight, multiplier, penalty, threshold):
-    return 1 - similarity(seq1, seq2, weight, multiplier, penalty, threshold)
+def distance(seq1: str, seq2: str, weight, multiplier, penalty, threshold, gap_threshold):
+    return 1 - similarity(seq1, seq2, weight, multiplier, penalty, threshold, gap_threshold)
 
 
 def construct_neighbor_matrix(lst):
@@ -87,7 +94,7 @@ def construct_neighbor_matrix(lst):
 
 
 @timeit
-def distance_matrix(aa_seqs: dict, weight, multiplier, penalty, threshold):
+def distance_matrix(aa_seqs: dict, weight, multiplier, penalty, threshold, gap_threshold):
     total_sequences = len(aa_seqs)
     _distance_matrix = np.zeros((total_sequences, total_sequences))
     #n = int(total_sequences^2 - total_sequences) / 2
@@ -102,7 +109,7 @@ def distance_matrix(aa_seqs: dict, weight, multiplier, penalty, threshold):
         rest_sequences = sequences[idx1 + 1 :]
         rest_snames = snames[idx1 + 1 :]
         for idx2, (name2, seq2) in enumerate(zip(rest_snames, rest_sequences)):
-            distance_score = distance(seq1, seq2, weight, multiplier, penalty, threshold)
+            distance_score = distance(seq1, seq2, weight, multiplier, penalty, threshold, gap_threshold)
             #similarity_matrix.append(similarity_score)
             _distance_matrix[idx1][idx2 + idx1 + 1] = distance_score
             _distance_matrix[idx1 + idx2 + 1][idx1] = distance_score
