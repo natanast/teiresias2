@@ -365,4 +365,5 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
         column_name = "Predicted Cluster for h = {}".format(heights_dict[height])
         excel_data[column_name] = excel_data["Sequence ID"].apply(lambda x: cluster_mapping.get("_" + x, "Not Found"))
         excel_data.to_excel(excel_file, index=False)
+
         # print("DONE")
