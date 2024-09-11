@@ -161,3 +161,7 @@ cython_debug/
 
 .vscode/
 .Rproj.user
+
+instructions.txt
+results/
+test_runs_teiresias/
