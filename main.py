@@ -4,6 +4,7 @@ from src.metrics.metrics import distance_matrix
 from src.utils.utils import read_file, seq_padding
 from src.clustering.tree_2_clusters import divide_tree_into_clusters
 import numpy as np
+import pandas as pd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--penalty", type = float, default = 0.0, help = "Penalty for missmatch")
     parser.add_argument("-t", "--threshold", type = int, default = 105, help = "Amino acid position number after which the match will be multiplied with 'multiplier' argument")
     parser.add_argument("-c", "--cuts", type = int, choices = [4, 8, 12], default = 4, help = "Number of cuts in the hierarchicall tree (4, 8, or 12)")
-    parser.add_argument("-o", "--output", type = str, help = "Excel file containing the initial data, where calculated clusters will be written as new columns")
+    parser.add_argument("-o", "--output", type = str, help = "Excel file where calculated clusters will be written as new columns")
     parser.add_argument("-g", "--gap_threshold", type = int, default = 15, help = "Threshold up to which gaps are considered matches")
 
     args = parser.parse_args()
@@ -43,5 +44,10 @@ if __name__ == "__main__":
     print("Creating tree...")
     tree, tree_path = get_tree(dist_matrix) 
     print("Tree created\n")
-    
+
+    # Create a new Excel file if it doesn't exist
+    excel_data = pd.DataFrame({"Sequence ID": list(aa_seqs.keys())})
+    excel_data.to_excel(o, index = False)  # Save an empty file with the sequence IDs
+
+    # Call divide_tree_into_clusters with the newly created Excel file
     divide_tree_into_clusters(tree_path, padded_seq, dist_matrix, c, o)
