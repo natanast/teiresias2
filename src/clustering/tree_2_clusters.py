@@ -9,12 +9,18 @@ import os
 def extract_similarity_matrix(tree):
     similarities = []
     #print(tree)
-    with open('test.txt', 'w') as f :
-        f.write(tree.__str__())
+    # with open('test.txt', 'w') as f :
+    #     f.write(tree.__str__())
 
-    with open('test.txt', 'r') as f :
-        lines = f.readlines()
+    # with open('test.txt', 'r') as f :
+    #     lines = f.readlines()
 
+    # Convert the tree object to a string
+    tree_str = str(tree)
+
+    # Split the string into lines
+    lines = tree_str.splitlines()
+    
     for line in lines[3:]:
         _line = line.strip()
         elements = _line.split('|')
@@ -357,5 +363,7 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
     # Save DataFrame to Excel
     excel_data.to_excel(excel_file, index = False)
 
-    print(f"Excel file saved as: {excel_file}")
+    print(f"Excel file saved")
+
+    # print(f"Excel file saved as: {excel_file}")
 

@@ -38,7 +38,7 @@ if __name__ == "__main__":
     print("Total number of sequences:", len(aa_seqs))
 
     dist_matrix = distance_matrix(padded_seq, w, m, p, t, g)
-    np.savetxt('UPGMA_Input.txt',dist_matrix,fmt='%.4f')
+    # np.savetxt('UPGMA_Input.txt',dist_matrix,fmt='%.4f')
     print("Distance matrix saved\n")
 
     print("Creating tree...")
