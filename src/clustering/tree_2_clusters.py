@@ -9,12 +9,18 @@ import os
 def extract_similarity_matrix(tree):
     similarities = []
     #print(tree)
-    with open('test.txt', 'w') as f :
-        f.write(tree.__str__())
+    # with open('test.txt', 'w') as f :
+    #     f.write(tree.__str__())
 
-    with open('test.txt', 'r') as f :
-        lines = f.readlines()
+    # with open('test.txt', 'r') as f :
+    #     lines = f.readlines()
 
+    # Convert the tree object to a string
+    tree_str = str(tree)
+
+    # Split the string into lines
+    lines = tree_str.splitlines()
+    
     for line in lines[3:]:
         _line = line.strip()
         elements = _line.split('|')
@@ -127,8 +133,7 @@ def get_tree_length (tree_path):
 
     return dist
 
-def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o): 
-
+def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):     
     with pt.Newicktreefile(tree_path) as treefile:
         tree = treefile.readtree()
 
@@ -140,21 +145,17 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
 
     print("\nTree length is: ", tree_len)
 
-    unique_float_valuesss = list(set(branch_len_values))
-    
-    # print(max(unique_float_valuesss))
-    unique_float_values = [tree_len - value for value in unique_float_valuesss]
-    # print(unique_float_values)
+    unique_float_values = list(set(branch_len_values))
+    unique_float_values = [tree_len - value for value in unique_float_values]
 
     seqs_similarity_nums_col = unique_float_values
     seqs_similarity_matrix = extract_similarity_matrix(tree)
 
-    #seqs_similarity_nums_col = seqs_similarity_matrix[:, 2]
-
     heights_dict = {}
     clusters_array = []
     height_values = []
-    
+
+  
     if h==4:
         q1, q2, q3 = compute_quartiles(seqs_similarity_nums_col)    
 
@@ -185,8 +186,8 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
                 cutted_tree = Tree.cluster_cut(tree, h4)
 
             clusters = cutted_tree[0]
-            clusters_array.append(clusters)      
-       
+            clusters_array.append(clusters)  
+ 
     elif h==8:
         q1, q2, q3, q4, q5, q6, q7 = compute_octamores(seqs_similarity_nums_col)
 
@@ -199,7 +200,6 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
         h7 = float ( (q6 + q7) / 2 )
         h8 = float ( (q7 + max(seqs_similarity_nums_col)) / 2)
 
-        
         # h1 = float (tree_len/16)
         # h2 = float ( h1 + tree_len/8 )
         # h3 = float ( h2 + tree_len/8 )
@@ -266,7 +266,8 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
 
 
         height_values = [h1, h2, h3, h4,  h5, h6, h7, h8, h9, h10, h11, h12]
-        heights_dict = {"h1": h1,"h2": h2,"h3": h3, "h4": h4, "h5": h5,"h6": h6,"h7": h7, "h8": h8, "h9": h9,"h10": h10,"h11": h11, "h12": h12}
+        heights_dict = {"h1": round(h1, 4), "h2": round(h2, 4), "h3": round(h3, 4), "h4": round(h4, 4), "h5": round(h5, 4), "h6": round(h6, 4),
+                        "h7": round(h7, 4), "h8": round(h8, 4), "h9": round(h9, 4), "h10": round(h10, 4), "h11": round(h11, 4), "h12": round(h12, 4)}
 
         print("Tree will be cut on the following heights: ", height_values)
 
@@ -300,70 +301,69 @@ def divide_tree_into_clusters (tree_path, fasta_seqs, dist_matrix, h, o):
             clusters_array.append(clusters)
 
 
+    # Prepare to save clusters in Excel
     Dict = {}
-    excel_file = o
+    excel_file = o  # Output Excel file path
     h_list = list(heights_dict.keys())
+
+    # Create a new empty DataFrame
+    excel_data = pd.DataFrame(columns = ["Sequence ID"])
 
     for idx, height in enumerate(height_values):
         cluster = clusters_array[idx]
-        single_element_clusters = [c for c in cluster if len(c) == 1]  
-        multiple_element_clusters = [c for c in cluster if len(c) > 1]  
+        single_element_clusters = [c for c in cluster if len(c) == 1]
+        multiple_element_clusters = [c for c in cluster if len(c) > 1]
 
         clusters_path = os.path.abspath(os.path.join(os.getcwd(), 'results', 'clusters', f'final_clusters_{height}.fa'))
-    
+
         with open(clusters_path, 'w') as f:
-            
-            for cluster_index, cluster_multi in enumerate(multiple_element_clusters):  
+            for cluster_index, cluster_multi in enumerate(multiple_element_clusters):
                 cluster_similarity = compute_cluster_similarity(list(cluster_multi), dist_matrix)
                 all_elements = [i for i in range(len(dist_matrix))]
                 dissimilarity = compute_outer_cluster_similarity(list(cluster_multi), dist_matrix, all_elements)
                 
                 f.write("Cluster {}, Num of seqs: {}, Similarity degree: {} Dissimilarity: {}\n".format(cluster_index + 1, len(cluster_multi), cluster_similarity, dissimilarity))
-                    
+                
                 for entry in cluster_multi:
                     key = list(fasta_seqs.keys())[int(entry)]
-                    Dict[key] = cluster_index + 1
-                    f.write("{}\n".format(key))
+                    Dict[key.lstrip('_')] = cluster_index + 1
+                    f.write("{}\n".format(key.lstrip('_')))
                 f.write("\n")
             
             for cluster_index, cluster_single in enumerate(single_element_clusters):
                 cluster_similarity = "-"
+                f.write("Cluster {}, Num of seqs: {}, Similarity degree: {}\n".format(cluster_index + len(multiple_element_clusters) + 1, len(cluster_single), cluster_similarity))
                 
-                f.write("Cluster {}, Num of seqs: {}, Similarity degree: {} \n".format(cluster_index + len(multiple_element_clusters) + 1, len(cluster_single), cluster_similarity))
-                    
                 for entry in cluster_single:
                     key = list(fasta_seqs.keys())[int(entry)]
                     Dict[key] = 0
                     f.write("{}\n".format(key))
                 f.write("\n")
 
-    for height in h_list:
-        clusters_path = os.path.abspath(os.path.join(os.getcwd(), 'results', 'clusters', f'final_clusters_{heights_dict[height]}.fa'))
+        cluster_mapping = {}
         with open(clusters_path, "r") as file:
             clusters_content = file.readlines()
 
-        excel_data = pd.read_excel(excel_file)
-
-        cluster_mapping = {}
         current_cluster = None
-        single_element_cluster = 0
-
         for line in clusters_content:
             line = line.strip()
             if line.startswith("Cluster"):
-                parts = line.split(",")
-                num_of_seqs_part = parts[1].strip()
+                num_of_seqs_part = line.split(",")[1].strip()
                 num_of_seqs = int(num_of_seqs_part.split(":")[1].strip())
-                if num_of_seqs > 1:
-                    current_cluster = int(line.split()[1].replace(",", ""))
-                else:
-                    current_cluster = "no"
+                current_cluster = int(line.split()[1].replace(",", "")) if num_of_seqs > 1 else "no"
             elif line.startswith(">"):
                 sequence_id = line[1:]
                 cluster_mapping[sequence_id] = current_cluster
 
-        column_name = "Predicted Cluster for h = {}".format(heights_dict[height])
-        excel_data[column_name] = excel_data["Sequence ID"].apply(lambda x: cluster_mapping.get("_" + x, "Not Found"))
-        excel_data.to_excel(excel_file, index=False)
+        # Add cluster data to DataFrame
+        column_name = f"Predicted Cluster for h = {heights_dict[h_list[idx]]}"
+        new_data = pd.DataFrame({"Sequence ID": list(cluster_mapping.keys()), column_name: list(cluster_mapping.values())})
+        excel_data = pd.merge(excel_data, new_data, how = 'outer', on = "Sequence ID")
 
-        # print("DONE")
+    # Save DataFrame to Excel
+    excel_data.to_excel(excel_file, index = False)
+
+    print(f"Excel file saved")
+
+    # print(f"Excel file saved as: {excel_file}")
+
