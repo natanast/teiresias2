@@ -6,6 +6,8 @@ from src.clustering.tree_2_clusters import divide_tree_into_clusters
 import numpy as np
 import pandas as pd
 
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type = str, help = "Input file containing AA sequences.")
