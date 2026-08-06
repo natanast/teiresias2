@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from time import time
 
+import sys
+
+sys.setrecursionlimit(10000)
+
 # from src.utils.utils import timeit
 
 # @timeit
